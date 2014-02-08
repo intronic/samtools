@@ -124,9 +124,9 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     fputs(".tviewpre { margin:5px; background-color:white;}\n",ptr->out);
     #define CSS(id,col) fprintf(ptr->out,".tviewc%d {color:%s;}\n.tviewcu%d {color:%s;text-decoration:underline;}\n",id,col,id,col);
         CSS(0, "black");
-    	CSS(1, "blue");
-	CSS(2, "green");
-	CSS(3, "yellow");
+    CSS(1, "#FF3083"); // CSS(1, "blue");
+    CSS(2, "#99CC00"); // CSS(2, "green");
+    CSS(3, "#0066FF"); // CSS(3, "yellow");
 	CSS(4, "black");
 	CSS(5, "green");
 	CSS(6, "cyan");
