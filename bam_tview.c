@@ -6,7 +6,8 @@ int base_tv_init(tview_t* tv,const char *fn, const char *fn_fa, const char *samp
 	assert(tv!=NULL);
 	assert(fn!=NULL);
 	tv->mrow = 24; tv->mcol = 80;
-	tv->color_for = TV_COLOR_MAPQ;
+	//tv->color_for = TV_COLOR_MAPQ;
+	tv->color_for = TV_COLOR_BASEQ;
 	tv->is_dot = 1;
 	
 	tv->fp = bam_open(fn, "r");
