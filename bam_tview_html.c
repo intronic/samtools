@@ -37,6 +37,7 @@ static void html_destroy(tview_t* base)
 
 static void html_mvprintw(struct AbstractTview* tv,int y ,int x,const char* fmt,...)
 	{
+          // create the row 0 showing coordinates
 	int i,nchars=0;
 	unsigned int size=tv->mcol+2;
 	char* str=malloc(size);
@@ -192,7 +193,8 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     	}
     fputs("</pre></div><footer>Legend:<ul>\
 <li>Strand: '<code>ACGT.</code>' = forward, '<code>acgt,</code>' = reverse ('<code>.,</code>' = ref, '<code>*</code>' = indel).</li>\
-<li>Accuracy: <span class='tviewc1'>0-90%</span> = q0-q9, <span class='tviewc2'>90-99%</span> = q10-q19, <span class='tviewc3'>99-99.9%</span> = q20-q29, <span class='tviewc4'>&ge;99.9% acc</span> = q30+.</li></ul></footer></body></html>",ptr->out);
+<li>Accuracy: <span class='tviewc1'>0-90%</span> = q0-q9, <span class='tviewc2'>90-99%</span> = q10-q19, <span class='tviewc3'>99-99.9%</span> = q20-q29, <span class='tviewc4'>&ge;99.9% acc</span> = q30+.</li>\
+<li>Position of title/centre base underlined in rows of data.</ul></footer></body></html>",ptr->out);
     return 0;
     }
 

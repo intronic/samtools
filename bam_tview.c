@@ -1,13 +1,17 @@
 #include <assert.h>
 #include "bam_tview.h"
 
+#define MAX_COLS 120
+
 int base_tv_init(tview_t* tv,const char *fn, const char *fn_fa, const char *samples)
 	{
 	assert(tv!=NULL);
 	assert(fn!=NULL);
-	tv->mrow = 24; tv->mcol = 80;
+	//tv->mrow = 24; tv->mcol = 80;
+	tv->mrow = 100; tv->mcol = MAX_COLS;
 	//tv->color_for = TV_COLOR_MAPQ;
 	tv->color_for = TV_COLOR_BASEQ;
+        tv->center_pos=0 ; tv->center_col=0; // MJP
 	tv->is_dot = 1;
 	
 	tv->fp = bam_open(fn, "r");
@@ -80,6 +84,8 @@ void base_tv_destroy(tview_t* tv)
 
 int tv_pl_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *pl, void *data)
 {
+  // draw row 2 with underline dots (in HTML mode)
+  // pos is pos on genome, n is number of reads in pileup at pos
 	extern unsigned const char bam_nt16_table[256];
 	tview_t *tv = (tview_t*)data;
 	int i, j, c, rb, attr, max_ins = 0;
@@ -117,6 +123,7 @@ int tv_pl_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *pl, void 
 	attr |= tv->my_colorpair(tv,i);
 	if (c == toupper(rb)) c = '.';
 	tv->my_attron(tv,attr);
+        // MJP adds row (tv row 2) of DOTs
 	tv->my_mvaddch(tv,2, tv->ccol, c);
 	tv->my_attroff(tv,attr);
 	if(tv->ins) {
@@ -243,6 +250,7 @@ int tv_fetch_func(const bam1_t *b, void *data)
 
 int base_draw_aln(tview_t *tv, int tid, int pos)
 	{
+          // MJP in HTML mode this gets the ref seq and consensus
 	assert(tv!=NULL);
 	// reset
 	tv->my_clear(tv);
@@ -359,7 +367,10 @@ int bam_tview_main(int argc, char *argv[])
 	   	 {
 		int _tid = -1, _beg, _end;
 		bam_parse_region(tv->header, position, &_tid, &_beg, &_end);
-		if (_tid >= 0) { tv->curr_tid = _tid; tv->left_pos = _beg; }
+		if (_tid >= 0) { tv->curr_tid = _tid; tv->left_pos = _beg; 
+                  tv->center_pos = _beg;
+                  tv->left_pos = _beg - tv->mcol/2; 
+                }
 	    	}
 	tv->my_drawaln(tv, tv->curr_tid, tv->left_pos);
 	tv->my_loop(tv);
