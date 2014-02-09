@@ -4,10 +4,13 @@ samtools
 This is a modified verion of samtools for a project needing a specific text/html view of a bam alignment.
 Modifications are under 'standalone' branch, tagged 'my-html-tview-1'
 
-Mods:
+Options (unchanged):
 
 - Specify -d h to trigger HTML output
 - Specify -p chr:pos to specify coordinate to center window on
+
+Mods:
+
 - Bases will be colored by base quality
 - Center base will be underlined in reads
 - Center base will be title of page and body
