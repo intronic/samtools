@@ -116,7 +116,9 @@ int tv_pl_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *pl, void 
 		else if (p[2] < p[1] && p[2] < p[0]) call = (1<<a2)<<16 | (int)((p[0]<p[1]?p[0]:p[1]) - p[2] + .499);
 		else call = (1<<a1|1<<a2)<<16 | (int)((p[0]<p[2]?p[0]:p[2]) - p[1] + .499);
 	}
-	attr = tv->my_underline(tv);
+	//attr = tv->my_underline(tv);
+        // color underline on the top row (row 2) of dots under the ref
+	attr = (pos==tv->center_pos) ? (tv->my_colorpair(tv,8) | tv->my_underline(tv)) : 0;
 	c = ",ACMGRSVTWYHKDBN"[call>>16&0xf];
 	i = (call&0xffff)/10+1;
 	if (i > 4) i = 4;
