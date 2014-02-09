@@ -150,8 +150,8 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     	
     	for(x=0;x< tv->mcol;++x)
 	    	{
-	    	
-		
+                  // add underline attribute on center_col for all rows
+                  if (x==tv->center_col) ptr->screen[y][x].attributes |= (1 << (UNDERLINE_FLAG));
 		if(x== 0 || ptr->screen[y][x].attributes != ptr->screen[y][x-1].attributes)
 	    		{
 	    		int css=0;
