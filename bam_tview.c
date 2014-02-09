@@ -214,12 +214,20 @@ int tv_pl_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *pl, void 
 			}
 		}
 		c = j? '*' : rb;
+                if (pos==tv->center_pos) {
+                  tv->center_col=tv->ccol;
+                }
 		if (c == '*') {
 			attr = tv->my_colorpair(tv,8);
 			tv->my_attron(tv,attr);
 			tv->my_mvaddch(tv,1, tv->ccol++, c);
 			tv->my_attroff(tv,attr);
-		} else tv->my_mvaddch(tv,1, tv->ccol++, c);
+		} else {
+                  attr = (pos == tv->center_pos) ? (tv->my_colorpair(tv,8) | tv->my_underline(tv)) : 0;
+                  tv->my_attron(tv,attr);
+                  tv->my_mvaddch(tv,1, tv->ccol++, c);
+                  tv->my_attroff(tv,attr);
+                }
 	}
 	tv->last_pos = pos;
 	return 0;
