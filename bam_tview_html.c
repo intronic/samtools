@@ -115,7 +115,7 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     fputs("<html><head>",ptr->out);
     fprintf(ptr->out,"<title>%s:%d</title>",
     	tv->header->target_name[tid],
-    	pos+1
+        tv->center_pos+1 // put the center pos in the HTML title
     	);
     //style
    
@@ -141,7 +141,7 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     
       fprintf(ptr->out,"<div class='tviewbody'><div class='tviewtitle'>%s:%d</div>",
     	tv->header->target_name[tid],
-    	pos+1
+    	tv->center_pos+1 // put the center pos in the BODY title
     	);
     
     fputs("<pre class='tviewpre'>",ptr->out);
