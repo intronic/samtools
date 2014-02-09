@@ -18,6 +18,7 @@ Usage:
 
     samtools tview -d h -p pos-to-center-on in.bam ref.fasta
 eg:
+
     samtools tview -d h -p chr12:25398284  my.bam hg19.fasta > my.html
 
 
