@@ -11,7 +11,7 @@ int base_tv_init(tview_t* tv,const char *fn, const char *fn_fa, const char *samp
 	tv->mrow = 100; tv->mcol = MAX_COLS;
 	//tv->color_for = TV_COLOR_MAPQ;
 	tv->color_for = TV_COLOR_BASEQ;
-        tv->center_pos=0 ; tv->center_col=0; // MJP
+        tv->center_pos=0 ; tv->center_col=0; tv->target_col = MAX_COLS/2; // MJP
 	tv->is_dot = 1;
 	
 	tv->fp = bam_open(fn, "r");
@@ -349,6 +349,11 @@ int bam_tview_main(int argc, char *argv[])
     }
 	if (argc==optind) error(NULL);
 	
+        // for HTML, with pos specified, 
+        // try making alignment over and over until center column is
+        // in the target
+        int left_offset = MAX_COLS/2;
+        do {
 	switch(view_mode)
 		{
 		case display_ncurses:
@@ -379,12 +384,15 @@ int bam_tview_main(int argc, char *argv[])
 		bam_parse_region(tv->header, position, &_tid, &_beg, &_end);
 		if (_tid >= 0) { tv->curr_tid = _tid; tv->left_pos = _beg; 
                   tv->center_pos = _beg;
-                  tv->left_pos = _beg - tv->mcol/2; 
+                  tv->left_pos = _beg - left_offset;
                 }
 	    	}
 	tv->my_drawaln(tv, tv->curr_tid, tv->left_pos);
+        // if center_col > MAX_COLS/2, decrement offset and repeat,
+        // otherwise done
+        --left_offset;
 	tv->my_loop(tv);
 	tv->my_destroy(tv);
-	
+        } while (tv->center_col > MAX_COLS/2);
 	return EXIT_SUCCESS;
 	}

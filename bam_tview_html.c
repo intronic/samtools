@@ -112,6 +112,8 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     html_tview_t* ptr=FROM_TV(tv);
     html_clear(tv);
     base_draw_aln(tv,  tid, pos);
+    // if center col is not within target, dont output 
+    if (tv->center_col > tv->target_col) return 0;
     fputs("<html><head>",ptr->out);
     fprintf(ptr->out,"<title>%s:%d</title>",
     	tv->header->target_name[tid],

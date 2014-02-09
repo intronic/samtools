@@ -27,7 +27,7 @@ typedef struct AbstractTview {
 	bcf_callaux_t *bca;
 
 	int ccol, last_pos, row_shift, base_for, color_for, is_dot, l_ref, ins, no_skip, show_name;
-  int center_pos, center_col; // genome position, and tv column of center 
+  int center_pos, center_col, target_col; // genome position, and tv column of center 
 	char *ref;
     khash_t(kh_rg) *rg_hash;
     /* callbacks */
