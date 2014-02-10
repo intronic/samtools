@@ -14,6 +14,7 @@ Mods:
 - Bases will be colored by base quality
 - Center base will be underlined in reads
 - Center base will be title of page and body
+- Table of counts by strand for center base below alignments
 - Legend for codes at bottom of page
 - View of 120-130 bases across page
 
