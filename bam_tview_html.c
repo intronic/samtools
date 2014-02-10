@@ -13,6 +13,8 @@ typedef struct HtmlTview {
 
 #define FROM_TV(ptr) ((html_tview_t*)ptr)
 
+int center_counts[256];
+
 static void html_destroy(tview_t* base)
 	{
 	int i;
@@ -99,6 +101,10 @@ static void html_clear(struct AbstractTview* tv)
 	}
     ptr->row_count=0;
     ptr->attributes=0;
+
+    // reset the center base counts
+    for (int i=0 ; i<256 ; ++i)
+      center_counts[i] = 0;
     }
     
 static int html_colorpair(struct AbstractTview* tv,int flag)
@@ -124,6 +130,8 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     fputs("<style type='text/css'>\n",ptr->out);
     fputs(".tviewbody { margin:5px; background-color:white;text-align:center;}\n",ptr->out);
     fputs(".tviewtitle {text-align:center;}\n",ptr->out);
+    fputs(".tviewtabledata {margin-left: auto; margin-right: auto; text-align:right;}\n",ptr->out);
+    fputs(".tviewtablerowlabel {text-align:center;}\n",ptr->out);
     fputs(".tviewpre { margin:5px; background-color:white;}\n",ptr->out);
     #define CSS(id,col) fprintf(ptr->out,".tviewc%d {color:%s;}\n.tviewcu%d {color:%s;text-decoration:underline;}\n",id,col,id,col);
         CSS(0, "black");
@@ -147,8 +155,11 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
     	);
     
     fputs("<pre class='tviewpre'>",ptr->out);
+    int center_count = 0;
+    char refc = ptr->screen[1][tv->center_col].ch;
+
     for(y=0;y< ptr->row_count;++y)
-    	{
+      {
     	
     	for(x=0;x< tv->mcol;++x)
 	    	{
@@ -192,13 +203,52 @@ static int html_drawaln(struct AbstractTview* tv, int tid, int pos)
 	    		}
 	    	}
     	if(y+1 < ptr->row_count) fputs("<br/>",ptr->out);
-    	}
-    fputs("</pre></div><footer>Legend:<ul>\
-<li>Strand: '<code>ACGT.</code>' = forward, '<code>acgt,</code>' = reverse ('<code>.,</code>' = ref, '<code>*</code>' = indel).</li>\
-<li>Accuracy: <span class='tviewc1'>0-90%</span> = q0-q9, <span class='tviewc2'>90-99%</span> = q10-q19, <span class='tviewc3'>99-99.9%</span> = q20-q29, <span class='tviewc4'>&ge;99.9% acc</span> = q30+.</li>\
-<li>Position of title/centre base underlined in rows of data.</ul></footer></body></html>",ptr->out);
-    return 0;
+        // Make counts of bases at center_col. Data starts at row 3,
+        // row0=ruler, row1=ref, row2=dots.
+        if (y>2) {
+      char c = ptr->screen[y][tv->center_col].ch;
+      switch (c) {
+      // count reference bases on + strand
+    case '.': 
+      ++center_counts[(int)refc]; 
+      ++center_count; 
+      break;
+      // count reference bases on - strand
+    case ',':
+      ++center_counts[tolower(refc)]; 
+      ++center_count; 
+      break;
+      // skip over gaps
+    case '*':
+    case ' ':
+      break;
+      // some other base so count it
+    default: 
+      ++center_counts[(int)c];
+      ++center_count;
+      break;
+      }
+        }
+      }
+
+fprintf(ptr->out,"</pre></div><footer><table class='tviewtabledata' border=1><caption class='tviewtitle'>Base Counts by strand at: %s:%d</caption><tr><th class='tviewtablerowlabel'>Base</th><th>Count</th><th>%%</th></tr>",
+    	tv->header->target_name[tid],
+        tv->center_pos+1);
+for (int i=0 ; i<256 ; ++i) {
+  if (center_counts[i] > 0)
+    {
+      fprintf(ptr->out, "<tr><td class='tviewtablerowlabel'><span %s>%c</span></td><td>%d</td><td>%.2f%%</td></tr>", 
+              ((char)toupper(i) == refc ? "class='tviewc8'" : ""), (char)i, center_counts[i], 
+              (center_count > 0 ? 100.0*center_counts[i]/center_count : 0.0));
     }
+ }
+fprintf(ptr->out, "<tr><td>Total</td><td>%d</td><td></td></tr>", center_count);
+fputs("</table><div class='legend'>Legend:<ul>\
+<li>Strand: '<code>ACGT.</code>' = forward, '<code>acgt,</code>' = reverse ('<code>.,</code>' = ref, '<code>*</code>' = indel).</li> \
+<li>Accuracy: <span class='tviewc1'>0-90%</span> = q0-q9, <span class='tviewc2'>90-99%</span> = q10-q19, <span class='tviewc3'>99-99.9%</span> = q20-q29, <span class='tviewc4'>&ge;99.9% acc</span> = q30+.</li> \
+<li>Position of title/centre base underlined in rows of data.</ul></div></footer></body></html>",ptr->out);
+return 0;
+}
 
 
 #define ANSI_COLOR_RED "\x1b[31m"
